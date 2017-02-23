@@ -4,18 +4,18 @@ len = length( Epocas);
 
 t1=(1:1:len)/1000;
 
-params.Fs=1000; % sampling frequency
-params.fpass=[1 50]; % band of frequencies to be kept
-params. tapers = [10 10]; % taper parameters
-params.pad=0; % pad factor for fft
+params.Fs=1000;             %sampling frequency
+params.fpass=[1 50];        %band of frequencies to be kept
+params. tapers = [10 10];   %taper parameters
+params.pad=0;               % pad factor for fft
 params.err=[0 0.05];
 params.trialave = 0;
 
 
-params2.Fs=1000; % sampling frequency
-params2.fpass=[90 140]; % band of frequencies to be kept
-params2. tapers=[5 9]; % taper parameters
-params2.pad=0; % pad factor for fft
+params2.Fs=1000;            % sampling frequency
+params2.fpass=[90 140];     % band of frequencies to be kept
+params2. tapers=[5 9];      % taper parameters
+params2.pad=0;              % pad factor for fft
 params2.err=[0 0.05];
 params2.trialave=0;
 
@@ -32,7 +32,8 @@ for m = 1:len
 
     subplot(3,1,2);
     imagesc(t,f,log( ( S/ mean( S(1,:)) )')      );  
-    % set(gca,'fontsize',12) 
+    
+    %set(gca,'fontsize',12) 
     xlabel('Time (s)') 
     ylabel('Frequency (Hz)' )
     colorbar off

@@ -8,7 +8,7 @@ len = length(Epocas);
 for i=1:len 
 
 	if ( max(Epocas(i,:)) > treshold )
-		Epocas(i,:) = NaN;
+		Epocas(i,:) = 	NaN;
 	end
 
 end
