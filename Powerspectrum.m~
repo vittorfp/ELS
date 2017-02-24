@@ -7,7 +7,7 @@ M=Data(14842000:14852000);
 t1=(1:1:length(M))/1000;
 
 params.Fs=1000; % sampling frequency
-params.fpass=[1 50]; % band of frequencies to be kept
+params.fpass=[5 50]; % band of frequencies to be kept
 params. tapers = [5 9]; % taper parameters
 params.pad=2; % pad factor for fft
 params.err=[0 0.05];
@@ -19,7 +19,7 @@ params.trialave = 0;
         
 params2.Fs=1000; % sampling frequency
 params2.fpass=[80 200]; % band of frequencies to be kept
-params2. tapers=[5 7]; % taper parameters
+params2. tapers=[5 9]; % taper parameters
 params2.pad=2; % pad factor for fft
 params2.err=[0 0.05];
 params2.trialave=0;

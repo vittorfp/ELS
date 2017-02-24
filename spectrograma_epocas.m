@@ -1,8 +1,8 @@
 %% Power spectrum
 
-len = length( Epocas);
+len = size( Epocas);
 
-t1=(1:1:len)/1000;
+t1=(1:1:len(1))/1000;
 
 params.Fs=1000;             %sampling frequency
 params.fpass=[1 50];        %band of frequencies to be kept
@@ -16,14 +16,14 @@ params2.Fs=1000;            % sampling frequency
 params2.fpass=[90 140];     % band of frequencies to be kept
 params2. tapers=[5 9];      % taper parameters
 params2.pad=0;              % pad factor for fft
-params2.err=[0 0.05];
+params2.err=[0 0.05];       
 params2.trialave=0;
 
-for m = 1:len 
-    Dado = Epocas(m,:)
-    [S2,t2,f2]=mtspecgramc(Dado(m)',[1.5 0.001],params2);
+for m = 1:len(1) 
+    Dado = Epocas(m,:);
+    [S2,t2,f2]=mtspecgramc(Dado(m),[1.5 0.001],params2);
 
-    [S,t,f]=mtspecgramc(Dado(m)',[1.5 0.001],params);
+    [S,t,f]=mtspecgramc(Dado(m),[1.5 0.001],params);
 
                 
     subplot(3,1,1);
