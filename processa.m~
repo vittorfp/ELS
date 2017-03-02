@@ -4,7 +4,7 @@ load('R42_1_1kHz.mat');
 Dado = R42HIPO1_1khz;
 disp('Oi! Os dados foram carregados para a memoria, comecando a processar...')
 
-[delta] = eegfilt(Dado',1000,1,4);
+[delta] = eegfilt(Dado',1000,1,2);
 save('R42_filt.mat','delta');
 disp('Dados filtrados na frequencia Delta. Aperte enter para prosseguir')
 pause
@@ -49,4 +49,7 @@ for i=1:s(1)
    pot(i,2) = ( norm(Epocas_theta(i,:) ) ^ 2 ) / s(2);
    
 end
+save('potencias.mat','pot');
+disp('Potencias calculadas. Aperte enter para prosseguir')
+pause
 clear i m n a b dado    
