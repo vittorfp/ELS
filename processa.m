@@ -42,6 +42,14 @@
 
 s = size(Epocas);
 pot = zeros(s(1),2);      %Constroi uma matriz para abrigar a potencia do theta e do delta
+srate=1000;
+WINDOW=10;
+NOVERLAP=1;
+
+%(1) EMG - separa epocas com movimento e sem (atonia)
+
+[S,F,T,P] = spectrogram(EMG,WINDOW*srate,NOVERLAP*srate,[],srate);
+
 
 for i=1:s(1)
    

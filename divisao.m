@@ -1,4 +1,4 @@
-dado  = R42HIPO1_1khz;
+dado  = R42MIO1_1khz;
 
 m= floor(length(dado)/10000) ; % número de épocas (de 10s)
 
