@@ -45,11 +45,11 @@ movimento(idxs) = 1;
 idxs_T = find(Theta > MT+threshold_T);
 idxs_D = find(Delta > MD+threshold_D);
 
-Theta_alto = zeros(1,size(Theta));
+Theta_alto = zeros(1,length(Theta));
 Theta_alto(idxs_T) = 1;
 
 
-Delta_alto = zeros(size(Delta));
+Delta_alto = zeros(length(Delta));
 Delta_alto(idxs_D) = 1;
 
 REM=find( Theta_alto == 1 & movimento == 0);
@@ -61,9 +61,8 @@ Color(REM) = 'r';
 Color(SWS) = 'k';
 Color(WK) = 'c';
 
-S = repmat([70,50,20],2399,1);
-scatter3(Delta,Theta,EMG_B,[],Color,'.')
-`
+scatter3(Delta,Theta,EMG_B,[],Color,'.');
+
 xlabel('Delta');
 ylabel('Theta');
 zlabel('EMG');
@@ -90,6 +89,9 @@ ylabel('LFP Cortex pre frontal')
 
 
 
+range = 2320:2399;
+plot(Delta(:,range));hold all;plot(Theta(:,range) );plot(EMG_B(:,range));hold off;figure(gcf);
+legend('Delta','Theta','EMG');
 
-plot(Delta(:,50:200),'DisplayName','Delta','YDataSource','Delta');hold all;plot(EMG_B(:,50:200),'DisplayName','EMG_B','YDataSource','EMG_B');plot(Theta(:,50:200),'DisplayName','Theta','YDataSource','Theta');hold off;figure(gcf);
-clear F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta srate
+
+clear F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta srate idxs idxs_D idxs_T 
