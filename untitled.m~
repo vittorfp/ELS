@@ -152,35 +152,24 @@ SWS_delta = mean(Delta(:,SWS)) * ones(1,length(Delta));
 SWS_theta = mean(Theta(:,SWS)) * ones(1,length(Theta));
 
 SD_REM_delta = std( Delta(:,REM));
+
+Delta_baixo = find(Delta < 0.04);
+
+REM_SLEEP = zeros(1,length(Delta));
+REM_SLEEP(Delta_baixo) = 1;
+
 %%
-remis = find(Delta_s < 0.049 & Theta_s > 0.07);
-
-REM_SLEEP = zeros(1,length(Delta_s));
-REM_SLEEP(remis) = 1;
-
-
-range = 2000:4000; 
+range = 3200:4000; 
 figure(1)
 subplot(2,1,1)
-plot(Delta_s(:,range));hold all;plot(Theta_s(:,range) );plot(REM_threshD(range) );plot(REM_threshT(range) );hold off;figure(gcf);
-legend('Delta','Theta','REM Delta Treshold','REM Theta Treshold');
-title('Potencias nas bandas (Suavizado)');
-xlabel('Epocas de 10s');
-ylabel('Potencia');
-xlim([0 2000]);
+plot(Delta(:,range));hold all;plot(Theta(:,range) );plot(REM_delta(:,range));plot(REM_theta(:,range));plot(SWS_delta(:,range));plot(SWS_theta(:,range));hold off;figure(gcf);
+legend('Delta','Theta','REM Delta','REM Theta','SWS Delta','SWS Theta');
 
+xlim([0 500])
 subplot(2,1,2)
-area(REM_SLEEP(range))
-xlim([0 2000])
-title('REM');
-xlabel('Epocas de 10s');
-ylabel('REM = 1; Não = 0');
-set(gcf,'color','white');
+area(REM_SLEEP)
+xlim([0 500])
 
-
-
-
-%%
 clear F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta banda_gamma srate idxs idxs_D idxs_T 
 
 
