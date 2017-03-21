@@ -7,14 +7,14 @@ M=Data(1340*10000:1343*10000);
 t1=(1:1:length(M))/1000;
 
 params.Fs=1000; % sampling frequency
-params.fpass=[1 50]; % band of frequencies to be kept
-params. tapers = [3 5]; % taper parameters
+params.fpass=[0 50]; % band of frequencies to be kept
+params. tapers = [5 7]; % taper parameters
 params.pad=2; % pad factor for fft
 params.err=[0 0.5];
 params.trialave = 0;
 
 
-        [S,t,f]=mtspecgramc(M',[0.3 0.001],params);
+        [S,t,f]=mtspecgramc(M',[1 0.01],params);
         
         
 params2.Fs=1000; % sampling frequency
@@ -25,7 +25,7 @@ params2.err=[0 0.05];
 params2.trialave=0;
 
 
-        [S2,t2,f2]=mtspecgramc(M',[0.5 0.001],params2);
+        [S2,t2,f2]=mtspecgramc(M',[1 0.01],params2);
         
 subplot(3,1,1);
 plot(t1,M);
@@ -47,7 +47,8 @@ axis xy
 set(gcf,'color','white')
 
 subplot(3,1,3);
-imagesc(t2,f2,log( ( S2/ mean( S2(1,:)) )'))
+imagesc(t2,f2,S2')
+%log( ( S2/ mean( S2(1,:)) )')
 % set(gca,'fontsize',12)
 xlabel('Time (s)') 
 ylabel('Frequency (Hz)' )
