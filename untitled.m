@@ -44,6 +44,8 @@ clear i z y c
 REM_threshD = ones(length(Delta_s)) .* 0.045;
 REM_threshT = ones(length(Delta_s)) .* 0.065;
 %%
+%Grafico para visualizar a diferença entre as potencias filtradas e as
+%calculadas na tora msm
 range = 3200:4000; 
 figure(1)
 subplot(2,1,1)
@@ -153,6 +155,7 @@ SWS_theta = mean(Theta(:,SWS)) * ones(1,length(Theta));
 
 SD_REM_delta = std( Delta(:,REM));
 %%
+%Classifica os REMs e plota o resultado bunitin
 remis = find(Delta_s < 0.049 & Theta_s > 0.07);
 
 REM_SLEEP = zeros(1,length(Delta_s));
@@ -177,10 +180,8 @@ xlabel('Epocas de 10s');
 ylabel('REM = 1; Não = 0');
 set(gcf,'color','white');
 
+clear remis range F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta banda_gamma srate idxs idxs_D idxs_T 
 
 
 
 %%
-clear F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta banda_gamma srate idxs idxs_D idxs_T 
-
-
