@@ -180,9 +180,8 @@ REM_SLEEP = zeros(1,length(Delta_s));
 
 remis = find(Delta_s < REM_threshD(1) & Theta_s > REM_threshT(1) & Emg_s(1:4307) < MIO_thresh(1));
 REM_SLEEP(remis) = 1;
-0009
 
-range = 1:4300; 
+range = 2500:4000; 
 figure(1)
 subplot(2,1,1)
 plot(Delta_s(:,range));hold all;plot(Theta_s(:,range) );plot(REM_threshD(range) );plot(REM_threshT(range) );hold off;figure(gcf);
@@ -190,12 +189,12 @@ legend('Delta','Theta','REM Delta Treshold','REM Theta Treshold');
 title('Potencias nas bandas (Suavizado)');
 xlabel('Epocas de 10s');
 ylabel('Potencia');
-xlim([0 length(Delta_s)]);
+xlim([0 length(Delta_s(range))]);
 
 subplot(2,1,2)
-area(REM_SLEEP);
+area(REM_SLEEP(range));
 %plot(Emg_s);hold all; plot(MIO_thresh);hold off
-xlim([0 length(Emg_s)]);
+xlim([0 length(Emg_s(range))]);
 title('REM Stages');
 xlabel('Epocas de 10s');
 ylabel('Estado');

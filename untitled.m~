@@ -175,14 +175,13 @@ SD_REM_delta = std( Delta(:,REM));
 
 MIO_thresh = ones(length(Emg_s)) .* 0.0009;
 REM_threshD = ones(length(Delta_s)) .* 0.045;
-REM_threshT = ones(length(Delta_s)) .* 0.055;
+REM_threshT = ones(length(Delta_s)) .* 0.054;
 REM_SLEEP = zeros(1,length(Delta_s));
 
 remis = find(Delta_s < REM_threshD(1) & Theta_s > REM_threshT(1) & Emg_s(1:4307) < MIO_thresh(1));
 REM_SLEEP(remis) = 1;
-0009
 
-range = 1:4300; 
+range = 2500:4000; 
 figure(1)
 subplot(2,1,1)
 plot(Delta_s(:,range));hold all;plot(Theta_s(:,range) );plot(REM_threshD(range) );plot(REM_threshT(range) );hold off;figure(gcf);
@@ -195,10 +194,11 @@ xlim([0 length(Delta_s)]);
 subplot(2,1,2)
 area(REM_SLEEP);
 %plot(Emg_s);hold all; plot(MIO_thresh);hold off
-xlim([0 length(Emg_s)]);
-title('REM');
+xlim([0 length(Emg_s())]);
+title('REM Stages');
 xlabel('Epocas de 10s');
-ylabel('REM = 1; Não = 0');
+ylabel('Estado');
+legend('REM');
 set(gcf,'color','white');
 
 clear remis range F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta banda_gamma srate idxs idxs_D idxs_T 
