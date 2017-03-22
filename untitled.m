@@ -1,40 +1,56 @@
 %R42MIO1_1khz
 %R42HIPO1_1khz
-
+%%
 srate=1000;
 WINDOW=10;  
-NOVERLAP=0.01;
+NOVERLAP=5;
 
-%banda_emg = find(F < 500 & F > 300);
-
-%EMG_B = sum( P(banda_emg,:),1);
 
 
 %[S,F,T,P] = spectrogram(R42HIPO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
+[S,F,T,P] = spectrogram(R42MIO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
+
 %save('spectrogram.mat','S','F','T','P');
 
+clear srate WINDOW NOVERLAP
+%%
 
-    banda_emg = find(F > 300 & F < 500);
-    banda_theta = (F >5 & F < 12);
-    banda_delta = (F >1 & F < 4);
-    %banda_gamma = (F >33 & F < 55);
+banda_emg = find(F > 300 & F < 500);
+Emg = sum( P(banda_emg,:),1);
 
-    Theta = sum(P(banda_theta,:),1);
-    Delta = sum(P(banda_delta,:),1);
-    %Gamma = sum(P(banda_gamma,:),1);
+Emg_s = [];
+c = length(Emg)-3;
+for i = 4:c
+    y = i-3;
+    z = i+3;
+    Emg_s = [Emg_s sum(Emg(y:z))/6];
+    
+end
 
-    Theta_s = [];
-    Delta_s = [];
-    %Gamma_s = [];
-    c = length(Delta)-3;
-    for i = 4:c
-        y = i-3;
-        z = i+3;
-        Theta_s = [Theta_s sum(Theta(y:z))/6];
-        Delta_s = [Delta_s sum(Delta(y:z))/6];
-        %Gamma_s = [Gamma_s sum(Gamma(y:z))/6];
+clear i z y c
 
-    end
+%%
+banda_theta = (F >5 & F < 12);
+banda_delta = (F >1 & F < 4);
+banda_gamma = (F >33 & F < 55);
+
+Theta = sum(P(banda_theta,:),1);
+Delta = sum(P(banda_delta,:),1);
+Gamma = sum(P(banda_gamma,:),1);
+EMG = sum( P(banda_emg,:),1);
+
+Theta_s = [];
+Delta_s = [];
+Gamma_s = [];
+c = length(Delta)-3;
+for i = 4:c
+    y = i-3;
+    z = i+3;
+    Theta_s = [Theta_s sum(Theta(y:z))/6];
+    Delta_s = [Delta_s sum(Delta(y:z))/6];
+    Gamma_s = [Gamma_s sum(Gamma(y:z))/6];
+
+end
 
 clear i z y c
 %save('spectrogram_hipo.mat','Delta','Theta','Gamma','Delta_s','Theta_s','Gamma_s');
@@ -156,13 +172,17 @@ SWS_theta = mean(Theta(:,SWS)) * ones(1,length(Theta));
 SD_REM_delta = std( Delta(:,REM));
 %%
 %Classifica os REMs e plota o resultado bunitin
-remis = find(Delta_s < 0.049 & Theta_s > 0.07);
 
+MIO_thresh = ones(length(Emg_s)) .* 0.0009;
+REM_threshD = ones(length(Delta_s)) .* 0.045;
+REM_threshT = ones(length(Delta_s)) .* 0.054;
 REM_SLEEP = zeros(1,length(Delta_s));
+
+remis = find(Delta_s < REM_threshD(1) & Theta_s > REM_threshT(1) & Emg_s(1:4307) < MIO_thresh(1));
 REM_SLEEP(remis) = 1;
+0009
 
-
-range = 2000:4000; 
+range = 1:4300; 
 figure(1)
 subplot(2,1,1)
 plot(Delta_s(:,range));hold all;plot(Theta_s(:,range) );plot(REM_threshD(range) );plot(REM_threshT(range) );hold off;figure(gcf);
@@ -170,18 +190,19 @@ legend('Delta','Theta','REM Delta Treshold','REM Theta Treshold');
 title('Potencias nas bandas (Suavizado)');
 xlabel('Epocas de 10s');
 ylabel('Potencia');
-xlim([0 2000]);
+xlim([0 length(Delta_s)]);
 
 subplot(2,1,2)
-area(REM_SLEEP(range))
-xlim([0 2000])
-title('REM');
+area(REM_SLEEP);
+%plot(Emg_s);hold all; plot(MIO_thresh);hold off
+xlim([0 length(Emg_s)]);
+title('REM Stages');
 xlabel('Epocas de 10s');
-ylabel('REM = 1; Não = 0');
+ylabel('Estado');
+legend('REM');
 set(gcf,'color','white');
 
 clear remis range F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta banda_gamma srate idxs idxs_D idxs_T 
-
 
 
 %%
