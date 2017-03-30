@@ -2,31 +2,19 @@ srate=1000;
 WINDOW=10;  
 NOVERLAP=5;
 
+%Calcula spectro de frequencia dos dados (costuma demorar bastante)
 
-
-%[S,F,T,P] = spectrogram(R42HIPO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
-%[S,F,T,P] = spectrogram(R42MIO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
+[S,F,T,P] = spectrogram(R42HIPO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
+pause
+[S,F,T,P] = spectrogram(R42MIO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
 
 %save('spectrogram.mat','S','F','T','P');
 
 clear srate WINDOW NOVERLAP
-%%
-
-banda_emg = find(F > 300 & F < 500);
-Emg = sum( P(banda_emg,:),1);
-
-Emg_s = [];
-c = length(Emg)-3;
-for i = 4:c
-    y = i-3;
-    z = i+3;
-    Emg_s = [Emg_s sum(Emg(y:z))/6];
-    
-end
-
-clear i z y c
 
 %%
+
+%Faz a suavização dos dados filtrados, aplicando uma media de 6 epocas
 banda_theta = (F >5 & F < 12);
 banda_delta = (F >1 & F < 4);
 banda_gamma = (F >33 & F < 55);
@@ -47,7 +35,7 @@ for i = 4:c
     Theta_s = [Theta_s sum(Theta(y:z))/6];
     Delta_s = [Delta_s sum(Delta(y:z))/6];
     Gamma_s = [Gamma_s sum(Gamma(y:z))/6];
-
+    Emg_s   = [Emg_s   sum( Emg(y:z) )/6];
 end
 
 clear i z y c
@@ -82,7 +70,7 @@ set(gcf,'color','white');
 
 
 %%
-%Classifica os REMs e plota o resultado bunitin
+%Classifica os REMs e plota o resultado preliminar bunitin
 
 MIO_thresh = ones(length(Emg_s)) .* 0.0009;
 REM_threshD = ones(length(Delta_s)) .* 0.045;
@@ -117,7 +105,7 @@ clear remis range F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta band
 
 
 %%
-
+%Classifica todos os estados (preliminar)
 
 %Classifica os REMs 
 
@@ -198,6 +186,8 @@ set(gcf,'color','white');
 clear h MIO_thresh is_rem is_wake is_sws range F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta banda_gamma srate idxs idxs_D idxs_T 
 
 %%
+%Observa a existencia de incoerencias nas classificações geradas e as
+%corrige.
 
 superposicao = find(REM_SLEEP + SW_SLEEP + WAKE > 1);
 if(length(superposicao) == 0)
@@ -281,6 +271,8 @@ REM_SLEEP(r) = 1;
 SW_SLEEP(s) = 1;
 WAKE(w) = 1;
 
+
+%Plota a figura bonitona com os estados ja corrigidos em Area e patamares
 range = 1:4000; 
 figure(1)
 subplot(4,1,1)
@@ -295,22 +287,19 @@ xlim([0 length(Delta_s(range))]);
 grid();
 
 
-
-
-
 subplot(4,1,2)
 h = area(REM_SLEEP(range));
-%h.LineWidth = 0.001;
-h.EdgeColor = 'none';
-h.FaceColor = [85/255 20/255 201/255];
 
+h.LineWidth = 0.001;
+%h.EdgeColor = 'none';
+h.FaceColor = [85/255 20/255 201/255];
 hold on;
 
 
 h = area(WAKE(range));
 h.FaceColor = [85/255 220/255 200/255];
-h.EdgeColor = 'none';
-%h.LineWidth = 0.0001;
+%h.EdgeColor = 'none';
+h.LineWidth = 0.0001;
 %h.EdgeAlpha = 0.5;
 
 h = area(SW_SLEEP(range));
@@ -344,8 +333,6 @@ grid();
 
 set(gcf,'color','white');
 
-%stairs(Estados(range));
-%ylim([0 4])
 clear h res a i j z next last r w s superposicao
 
 
@@ -372,6 +359,14 @@ set(gca,'YTickLabel',{'REM' 'SWS' 'WAKE'});
 
 %%
 
+%Vê qual o percentual de tempo o Ratovsky fica em cada estado
+
+total_time = length(REM_SLEEP);
+REM_time = sum(REM_SLEEP);
+SWS_time = sum(SW_SLEEP);
+WAKE_time = sum(WAKE);
 
 
+d = sprintf('State percentual:\n\n\t REM: %.1f\n\t SWS: %.1f\n\tWAKE: %.1f',REM_time*100/total_time,SWS_time*100/total_time,WAKE_time*100/total_time);
+disp(d);
 
