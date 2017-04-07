@@ -1,83 +1,166 @@
-srate=1000;
-WINDOW=10;  
-NOVERLAP=5;
+%% Calcula spectro de frequencia dos dados (costuma demorar bastante)
+% 47:50 52 54:60
+for i = 42
+   for j = 1:4
+        srate=1000;
+        WINDOW=10;  
+        NOVERLAP=5;
 
-%Calcula spectro de frequencia dos dados (costuma demorar bastante)
+        rat_num = 42;
+        slice_num = 1;
 
-[S,F,T,P] = spectrogram(R42HIPO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
-pause
-[S,F,T,P] = spectrogram(R42MIO1_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
+        load( sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R%dHIPO%d_1khz.mat',rat_num,slice_num), 'HIPO_1khz');
 
-%save('spectrogram.mat','S','F','T','P');
+        utreshold =  1.5; %Definido empiricamente
+        ltreshold =  -1.5; %Definido empiricamente
+        A = find(HIPO_1khz > utreshold | HIPO_1khz < ltreshold);
+        
+        [S,F,T,P] = spectrogram(HIPO_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
+        A1 = floor( A ./ ( length(HIPO_1khz)/length(T) ) );
+        clear HIPO_1khz
+        save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/spectrograms/R%d_%d_spectrogram.mat', rat_num,slice_num ),'S','F','T','P');
 
-clear srate WINDOW NOVERLAP
+        clear S F T P 
+        disp('A primeira parte ja foi, ainda falta o miograma ...');
+        load( sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R%dMIO%d_1khz.mat',rat_num,slice_num), 'MIO_1khz');
 
-%%
+        %Calcula o envelope do EMG, isso faz com que o dado seja mais suave
+        y = hilbert(MIO_1khz);
+        MIO_1khz = abs(y);
+        clear y
 
-%Faz a suavização dos dados filtrados, aplicando uma media de 6 epocas
-banda_theta = (F >5 & F < 12);
-banda_delta = (F >1 & F < 4);
-banda_gamma = (F >33 & F < 55);
-banda_emg = find(F > 300 & F < 500);
+        [S2,F2,T2,P2] = spectrogram(MIO_1khz,WINDOW*srate,NOVERLAP*srate,[],srate); 
 
-Emg = sum( P(banda_emg,:),1);
-Theta = sum(P(banda_theta,:),1);
-Delta = sum(P(banda_delta,:),1);
-Gamma = sum(P(banda_gamma,:),1);
+        utreshold =  1.5; %Definido empiricamente
+        ltreshold =  -1.5; %Definido empiricamente
+        A = find(MIO_1khz > utreshold | MIO_1khz < ltreshold);
+        A2 = floor( A ./ ( length(MIO_1khz)/length(T2) ) );
+        A = [A1' A2'];
 
-Theta_s = [];
-Delta_s = [];
-Gamma_s = [];
-c = length(Delta)-3;
-for i = 4:c
-    y = i-3;
-    z = i+3;
-    Theta_s = [Theta_s sum(Theta(y:z))/6];
-    Delta_s = [Delta_s sum(Delta(y:z))/6];
-    Gamma_s = [Gamma_s sum(Gamma(y:z))/6];
-    Emg_s   = [Emg_s   sum( Emg(y:z) )/6];
+        clear MIO_1khz A1 A2
+        save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/spectrograms/R%d_%d_spectrogram.mat', rat_num,slice_num ),'S2','F2','T2','P2','A','-append');
+        clear S2 F2 T2 P2 A utreshold ltreshold Aq A2
+
+        clear srate WINDOW NOVERLAP
+
+        % %%
+
+        %Faz a suavização dos dados filtrados, aplicando uma media de 6 epocas
+
+        load( sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/spectrograms/R%d_%d_spectrogram.mat', rat_num,slice_num ), 'F','F2','P','P2','A');
+        
+        banda_theta = find(F >5 & F < 12 );
+        banda_delta = find(F >1 & F < 4);
+        banda_gamma = find(F >33 & F < 55);
+        banda_emg = find(F2 > 300 & F2 < 500);
+
+        P(banda_theta,A) = NaN;
+        P(banda_delta,A) = NaN;
+        P(banda_gamma,A) = NaN;
+        P(banda_emg , A) = NaN;
+
+
+        Emg   = sum( P2(banda_emg , : ) , 'includenan');
+        Theta = sum( P(banda_theta, : ) , 'includenan');
+        Delta = sum( P(banda_delta, : ) , 'includenan');
+        Gamma = sum( P(banda_gamma, : ) , 'includenan');
+        clear P P2 F F2
+
+        Theta_s = [];
+        Delta_s = [];
+        Gamma_s = [];
+        Emg_s = [];
+
+        c = length(Delta)-3;
+
+        for i = 4:c
+
+            y = i-3;
+            z = i+3;
+
+            Theta_s = [Theta_s nanmean( Theta(y:z) ) ];
+            Delta_s = [Delta_s nanmean( Delta(y:z) ) ];
+            Gamma_s = [Gamma_s nanmean( Gamma(y:z) ) ];
+            Emg_s   = [Emg_s   nanmean(  Emg(y:z)  ) ];
+
+        end
+
+        %save('spectrogram.mat','Delta','Theta','Gamma','Delta_s','Theta_s','Gamma_s');
+        save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/spectrograms/R%d_%d_spectrogram.mat', rat_num,slice_num ),'Delta_s','Theta_s','Gamma_s','Emg_s','Delta','Theta','Gamma','Emg','-append');
+        clear i z y c A S F P S2 F2 P2 banda_gamma banda_emg banda_delta banda_theta Emg Emg_s Gamma Gamma_s Delta Delta_s Theta Theta_s
+
+        
+   end
 end
 
-clear i z y c
-%save('spectrogram_hipo.mat','Delta','Theta','Gamma','Delta_s','Theta_s','Gamma_s');
+%% Grafico para visualizar os limiares
 
+MIO_thresh1 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) ); %- std(Emg_s)/2 );
+MIO_thresh2 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/4 );
+MIO_thresh3 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/2 );
 
+REM_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s) - std(Delta_s)/2 );
+REM_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
 
-%%
-%Grafico para visualizar a diferença entre as potencias filtradas e as
-%calculadas na tora msm
+SWS_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s) );%- std(Delta_s)/2 );
+SWS_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
 
-REM_threshD = ones(length(Delta_s)) .* 0.045;
-REM_threshT = ones(length(Delta_s)) .* 0.065;
-
-range = 3200:4000; 
+range = 1:2000; 
 figure(1)
 subplot(2,1,1)
-plot(Delta(:,range));hold all;plot(Theta(:,range) );hold off;figure(gcf);
-legend('Delta','Theta');
-title('Potencias nas bandas');
-xlabel('Epocas de 10s');
-ylabel('Potencia');
-xlim([0 800]);
+plot(Emg_s(:,range) );hold all;plot(MIO_thresh1(range) );plot(MIO_thresh2(range) );plot(MIO_thresh3(range) );hold off;figure(gcf);
+legend('Miograma','Threshold 1','Threshold 2','Threshold 3');
+title('Thresholds do EMG');
+xlabel('Epocas de 5s');
+ylabel('Potência média');
+xlim([min(range) max(range)]);
 subplot(2,1,2)
 plot(Delta_s(:,range));hold all;plot(Theta_s(:,range) );plot(REM_threshD(range) );plot(REM_threshT(range) );hold off;figure(gcf);
 legend('Delta','Theta','REM Delta Treshold','REM Theta Treshold');
-title('Potencias nas bandas (Suavizado)');
-xlabel('Epocas de 10s');
-ylabel('Potencia');
-xlim([0 800]);
+title('Thresholds do EEG');
+xlabel('Épocas de 5s');
+ylabel('Potência média');
+xlim([min(range) max(range)]);
 set(gcf,'color','white');
 
+%% Visualizar limiares de SWS
 
-%%
-%Classifica os REMs e plota o resultado preliminar bunitin
+MIO_thresh1 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) ); %- std(Emg_s)/2 );
+MIO_thresh2 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/4 );
+MIO_thresh3 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/2 );
 
-MIO_thresh = ones(length(Emg_s)) .* 0.0009;
-REM_threshD = ones(length(Delta_s)) .* 0.045;
-REM_threshT = ones(length(Delta_s)) .* 0.054;
+REM_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s) - std(Delta_s)/2 );
+REM_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
+
+SWS_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s)  + std(Delta_s)/2 );
+SWS_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
+
+
+range = 1:2000; 
+
+figure(2)
+plot(Delta_s(:,range) );hold all;plot(Theta_s(:,range) );plot(SWS_threshD(range) );plot(SWS_threshT(range) );hold off;figure(gcf);
+legend('Delta','Theta','Threshold Delta SWS','Threshold Theta SWS');
+title('Thresholds SWS');
+xlabel('Epocas de 5s');
+ylabel('Potência média');
+xlim([min(range) max(range)]);
+set(gcf,'color','white');
+
+%% Classifica os REMs e plota o resultado preliminar bunitin
+
+MIO_thresh1 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) ); %- std(Emg_s)/2 );
+MIO_thresh2 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/4 );
+MIO_thresh3 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/2 );
+
+REM_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s) - std(Delta_s)/2 );
+REM_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
+
+SWS_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s)  + std(Delta_s)/2 );
+SWS_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
 REM_SLEEP = zeros(1,length(Delta_s));
 
-remis = find(Delta_s < REM_threshD(1) & Theta_s > REM_threshT(1) & Emg_s(1:4307) < MIO_thresh(1));
+remis = find(Delta_s < REM_threshD(1) & Theta_s > REM_threshT(1) & Emg_s < MIO_thresh(1));
 REM_SLEEP(remis) = 1;
 
 range = 2500:4000; 
@@ -107,34 +190,35 @@ clear remis range F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta band
 %%
 %Classifica todos os estados (preliminar)
 
-%Classifica os REMs 
 
-MIO_thresh = ones(1,length(Emg_s)) .* 0.002;
-REM_threshD = ones(1,length(Delta_s)) .* 0.045;
-REM_threshT = ones(1,length(Delta_s)) .* 0.054;
+MIO_thresh1 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) ); %- std(Emg_s)/2 );
+MIO_thresh2 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/4 );
+MIO_thresh3 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/2 );
+
+REM_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s) - std(Delta_s)/2 );
+REM_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
+
+SWS_threshD = ones(1,length(Delta_s)) .* ( nanmean(Delta_s)  + std(Delta_s)/2 );
+SWS_threshT = ones(1,length(Theta_s)) .* ( nanmean(Theta_s) ); % + std(Theta_s) );
 
 REM_SLEEP = zeros(1,length(Delta_s));
+SW_SLEEP = zeros(1,length(Delta_s));
+WAKE = zeros(1,length(Delta_s));
 
-is_rem = find(Delta_s < REM_threshD(1) & Theta_s > REM_threshT(1) & Emg_s(1:length(Delta_s)) < MIO_thresh(1));
+%Classifica os REMs 
+is_rem = find(Delta_s < REM_threshD(1) & Theta_s < REM_threshT(1) & Emg_s < MIO_thresh(1));
 REM_SLEEP(is_rem) = 1;
 
-
 %Classifica os SWS
-
-SW_SLEEP = zeros(1,length(Delta_s));
-
 is_sws = find(Delta_s > REM_threshT(1) & Theta_s > REM_threshT(1) & Emg_s(1:length(Delta_s)) < MIO_thresh(1));
 SW_SLEEP(is_sws) = 1;
 
 
 %Classifica os estados d acordado
-
-WAKE = zeros(1,length(Delta_s));
-
 is_wake = find( Emg_s(1:length(Delta_s)) > MIO_thresh(1));
 WAKE(is_wake) = 1;
 
-%plota o grafico com os estados
+%% Plota o grafico com os estados
 range = 1:4000; 
 figure(1)
 subplot(4,1,1)
@@ -145,13 +229,13 @@ legend('Delta','Theta','EMG');%,'REM Delta Treshold','REM Theta Treshold','MIO T
 title('Potencias nas bandas (Suavizado)');
 xlabel('Epocas de 10s');
 ylabel('Potencia');
-xlim([0 length(Delta_s(range))]);
+xlim([min(range) max(range)]);
 grid();
 
 subplot(4,1,2)
 area(REM_SLEEP(range));
 %plot(Emg_s);hold all; plot(MIO_thresh);hold off
-xlim([0 length(Emg_s(range))]);
+xlim([min(range) max(range)]);
 title('REM Stages');
 xlabel('Epocas de 10s');
 ylabel('Estado');
@@ -185,9 +269,7 @@ set(gcf,'color','white');
 
 clear h MIO_thresh is_rem is_wake is_sws range F S T P NOVERLAP WINDOW banda_delta banda_emg banda_theta banda_gamma srate idxs idxs_D idxs_T 
 
-%%
-%Observa a existencia de incoerencias nas classificações geradas e as
-%corrige.
+%% Observa a existencia de incoerencias nas classificações geradas e as corrige.
 
 superposicao = find(REM_SLEEP + SW_SLEEP + WAKE > 1);
 if(length(superposicao) == 0)
@@ -336,7 +418,7 @@ set(gcf,'color','white');
 clear h res a i j z next last r w s superposicao
 
 
-%%
+%% Treina SVM
 % Tentativa de treinar uma SVM paraa classificar o esquema 
 % rolou medio, ta rolando undersampling na class REM, ai ele nao ta
 % classificando direito, ta lançando como WAKE em todos.
@@ -357,7 +439,7 @@ xlim([0 4000]);
 set(gca,'YTick',[1:3]);
 set(gca,'YTickLabel',{'REM' 'SWS' 'WAKE'});
 
-%%
+%% Percentual em cada estado
 
 %Vê qual o percentual de tempo o Ratovsky fica em cada estado
 
@@ -366,7 +448,11 @@ REM_time = sum(REM_SLEEP);
 SWS_time = sum(SW_SLEEP);
 WAKE_time = sum(WAKE);
 
+save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/percentuals/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time');
+
 
 d = sprintf('State percentual:\n\n\t REM: %.1f\n\t SWS: %.1f\n\tWAKE: %.1f',REM_time*100/total_time,SWS_time*100/total_time,WAKE_time*100/total_time);
 disp(d);
+
+clear d total_time REM_time SWS_time WAKE_time
 

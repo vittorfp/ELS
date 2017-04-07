@@ -3,25 +3,11 @@
 %redor
 
 %passa os dados que vao ser analisados para
-data = ;
+data = HIPO_1khz;
 
 utreshold =  1.5; %Definido empiricamente
 ltreshold =  -1.5; %Definido empiricamente
-len = size(data);
-A = [];
-for i=1:len(1)
+A = find(data > utreshold || data < ltreshold);
 
-	if ( min(data(i)) < ltreshold ) || ( min(data(i)) > utreshold )
-		A = [A i];
-	end
-
-end
-
-for i = A
-   data(i) = ( data(i+1) + data(i+1) ) / 2;
-end
-
-%substitui os valores na variável de origem
-= data;
-
-clear utreshold ltreshold dado len i
+%su bstitui os valores na variável de origem
+clear utreshold ltreshold data len i
