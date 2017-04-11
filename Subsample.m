@@ -1,26 +1,30 @@
 %% Script que faz so subsample dos dados, diminuindo a taxa de amostragem de 2kHz para 1 kHz
 
-%41:44 47:50 52 54:60
-for i = [ 47:50 52 54:60 ] 
-   for j = 1:4
+folder = '/home/vittorfp/Documentos/Neuro/Dados/ELS_data/'
+folder2 = sprintf('%skhz/',folder);
+folder3 = sprintf('%sspectrograms/',folder2);
 
+%41:44 47:50 52 54:60
+for i = [41:44 47:50 52 54:60] 
+   for j = 1:4
+    
        T = [];
        var = sprintf('R%dPFC%d',i,j);
-       T = load( sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/R%d.mat',i), '-mat', var);
+       T = load( sprintf('%sR%d.mat',folder,i), '-mat', var);
        T = T.(var);
-       PFC_1khz = decimate(T, 2);
+       PFC_1khz = decimate(T, 1, 2);
        clear T; 
-       file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R%dPFC%d_1khz.mat',i,j);
+       file = sprintf('%sR%dPFC%d_1khz.mat',folder2,i,j);
        save( file ,'PFC_1khz');
        clear PFC_1khz;
        
        T = [];
        var = sprintf('R%dHIPO%d',i,j);
-       T = load( sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/R%d.mat',i), '-mat', var);
-       T = T.(sprintf('R%dHIPO%d',i,j));
-       HIPO_1khz = decimate(T, 2);
+       T = load( sprintf('%sR%d.mat',folder,i), '-mat', var);
+       T = T.(var);
+       HIPO_1khz = resample(T, 1, 2);
        clear T;
-       file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R%dHIPO%d_1khz.mat',i,j);
+       file = sprintf('%sR%dHIPO%d_1khz.mat',folder2,i,j);
        save( file ,'HIPO_1khz');
        clear HIPO_1khz;
        
@@ -28,19 +32,19 @@ for i = [ 47:50 52 54:60 ]
        
        T = [];
        var = sprintf('R%dMIO%d',i,j);
-       T = load( sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/R%d.mat',i), '-mat', var);
+       T = load( sprintf('%sR%d.mat',folder,i), '-mat', var);
        T = T.(var);
-       MIO_1khz = decimate(T, 2);
+       MIO_1khz = resample(T, 1, 2);
        clear T;
        
-       file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R%dMIO%d_1khz.mat',i,j);
+       file = sprintf('%sR%dMIO%d_1khz.mat',folder2,i,j);
        save( file ,'MIO_1khz');
        clear MIO_1khz;
   
    end
 end
 
-%% Teste: Resample x Downsample
+%% Teste: Resample x Downsample x Decimate
 
 %load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/R42.mat', 'R42HIPO1');
 %data = R42HIPO1(1:5000);
