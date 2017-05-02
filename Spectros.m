@@ -21,7 +21,7 @@ for i = [41:44 47:50 52 54:60 ]
         A = find(HIPO_1khz > utreshold | HIPO_1khz < ltreshold);
         
         [S,F,T,P] = spectrogram(HIPO_1khz,WINDOW*srate,NOVERLAP*srate,[],srate);
-        A1 = floor( A ./ ( length(HIPO_1khz)/length(T) ) );
+        A1 = floor( A ./ ( length(HIPO_1khz)/length(T) ) );x
         clear HIPO_1khz
         save(sprintf('%sR%d_%d_spectrogram.mat',folder3, rat_num,slice_num ),'S','F','T','P');
 
