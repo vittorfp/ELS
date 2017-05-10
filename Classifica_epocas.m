@@ -10,7 +10,7 @@
 % Carrega o spectrograma
 
 % Carrega os dados decimados
-cd()
+cd('/home/vittorfp/Documentos/Neuro/Scripts/ELS');
 rato = '42_1';
 load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R42MIO1_1khz.mat');
 %y = hilbert(MIO_1khz);
@@ -31,7 +31,7 @@ epocas = length(Theta_s);
 Estados = zeros(1,length(Theta_s));
 t2 = 1:epocas;
 
-init = 1;man_clas.mat
+init = 1;
 %% Loada uma classificação feita anteriormente
 
 load('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/man_clas.mat');
@@ -98,7 +98,8 @@ for i = init:epocas
 
     
     set(gcf,'color','white');
-    
+	
+    % Pede a opinião do usuario
     [s,v] = listdlg('PromptString','Classsifique a época:',...
                 'SelectionMode','single',...
                 'Name','Classificação',...
@@ -112,25 +113,9 @@ for i = init:epocas
         Estados(epoca) = s-1;
     end
     
-    % Pede a opinião do usuario
+    
    
-%     xix = -1; 
-%     ypstlon = -1;
-%     while ~( ( ypstlon < 0 && ypstlon > 1) && ( ( xix < 0) || (xix > 2 && xix < 2.5) || (xix > 4.5 && xix < 5) || (xix > 7 && xix < 7.5) || (xis > 9.5) ) ) 
-%         [xix,ypstlon] = ginput(1);  
-%     end
-%     
-%     if xix <= 2
-%         Estados(epoca) = 1;
-%     elseif xix <= 4.5
-%         Estados(epoca) = 2;
-%     elseif xix <= 7
-%         Estados(epoca) = 3;
-%     elseif xix <= 9.5
-%         Estados(epoca) = 4;
-%     else 
-%         Estados(epoca) = 0;
-%     end
-% 
 
 end
+save('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/man_clas.mat','Estados','epoca','init','rato');
+        
