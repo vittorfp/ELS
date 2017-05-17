@@ -260,7 +260,4 @@ while i >= 1 && i < length(Estados)
         i = i + 1;
     end
 end
-%% Salva os dados pósprocessados
-file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/labels-%s.mat',rato);
-save(file,'Estados','rato');
-
+%% Salva os d

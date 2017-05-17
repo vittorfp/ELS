@@ -1,5 +1,10 @@
-%% Classifica todos os estados
+%% Loada os dados
+rato = '42_3';
+file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/light/R%s_spectrogram.mat',rato);
+load(file);
 
+
+%% Classifica todos os estados
 
 MIO_thresh1 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) ) ; %- std(Emg_s)/2 );
 MIO_thresh2 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/4 );
@@ -128,7 +133,7 @@ for i = z
        last = Estados(i - 1);
        j = 0;
        
-       while(Estados(i + j) == 0)
+       while( Estados(i + j) == 0)
           j = j + 1;
           if( (i+j) > length(Estados))
              j = j-1;
@@ -183,7 +188,7 @@ while i >= 1 && i < length(Estados)
         i = i + 1;
     else
         if n < nEpocas
-            Estados(i-n:i) = min([Estados(i-n-1) Estados(i+1)]);
+            Estados(i-n:i) = max([Estados(i-n-1) Estados(i+1)]);
         end
         n = 1;
         i = i + 1;
@@ -219,11 +224,12 @@ WAKE_A(wa) = 1;
 
 %Plota a figura bonitona com os estados ja corrigidos em Area e patamares
 range = 1:4200; 
-figure(1)
+figure(2)
 subplot(4,1,1)
 plot(Delta_s(range));hold all;plot(Theta_s(range) );plot(10*Emg_s(range) );
 %plot(REM_threshD(range) );plot(REM_threshT(range) );plot(MIO_thresh(range) );
-hold off;figure(gcf);
+hold off;
+figure(gcf);
 legend('Delta','Theta','EMG');%,'REM Delta Treshold','REM Theta Treshold','MIO Treshold'
 title('Arquitetura do sono');
 %xlabel('Epocas de 10s');
