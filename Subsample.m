@@ -10,9 +10,10 @@ for i = [41:44 47:50 52 54:60]
     
        T = [];
        var = sprintf('R%dPFC%d',i,j);
+	   disp(var);
        T = load( sprintf('%sR%d.mat',folder,i), '-mat', var);
        T = T.(var);
-       PFC_1khz = decimate(T, 1, 2);
+       PFC_1khz = decimate(T, 2);
        clear T; 
        file = sprintf('%sR%dPFC%d_1khz.mat',folder2,i,j);
        save( file ,'PFC_1khz');
@@ -20,9 +21,10 @@ for i = [41:44 47:50 52 54:60]
        
        T = [];
        var = sprintf('R%dHIPO%d',i,j);
+	   disp(var);
        T = load( sprintf('%sR%d.mat',folder,i), '-mat', var);
        T = T.(var);
-       HIPO_1khz = resample(T, 1, 2);
+       HIPO_1khz = decimate(T, 2);
        clear T;
        file = sprintf('%sR%dHIPO%d_1khz.mat',folder2,i,j);
        save( file ,'HIPO_1khz');
@@ -32,9 +34,10 @@ for i = [41:44 47:50 52 54:60]
        
        T = [];
        var = sprintf('R%dMIO%d',i,j);
+	   disp(var);
        T = load( sprintf('%sR%d.mat',folder,i), '-mat', var);
        T = T.(var);
-       MIO_1khz = resample(T, 1, 2);
+       MIO_1khz = decimate(T, 2);
        clear T;
        
        file = sprintf('%sR%dMIO%d_1khz.mat',folder2,i,j);

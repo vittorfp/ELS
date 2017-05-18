@@ -1,10 +1,12 @@
 %% Loada os dados
-rato = '42_3';
+rat_num = 41;
+slice_num = 3; 
+rato = sprintf('%d_%d',rat_num,slice_num);
 file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/light/R%s_spectrogram.mat',rato);
 load(file);
 
 
-%% Classifica todos os estados
+% Classifica todos os estados
 
 MIO_thresh1 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) ) ; %- std(Emg_s)/2 );
 MIO_thresh2 = ones(1,length(Emg_s)) .* ( nanmean(Emg_s) - std(Emg_s)/4 );
@@ -122,7 +124,7 @@ Estados(w) = 3;
 
 
 
-%% Classifica as epocas que nao foram classificadas anteriormente
+% Classifica as epocas que nao foram classificadas anteriormente
 
 %stairs(Estados);
 
@@ -130,9 +132,13 @@ z = find(Estados == 0);
 
 for i = z
    if(Estados(i) == 0)
-       last = Estados(i - 1);
+	   if(i == 1)
+			last = Estados(i);
+	   else
+		   last = Estados(i - 1);
+	   end
+	   
        j = 0;
-       
        while( Estados(i + j) == 0)
           j = j + 1;
           if( (i+j) > length(Estados))
@@ -152,7 +158,7 @@ for i = z
 end
 
 
-%% Elimina classificações incoerentes, como REMs no meio de periodos WAKE
+% Elimina classificações incoerentes, como REMs no meio de periodos WAKE
 
 for i = 1:(length(Estados) -1 )
     res = Estados(i) - Estados(i+1);
@@ -176,33 +182,50 @@ for i = 1:(length(Estados) -1 )
    
     end
 end
-%% Elimina Estados com menos de 1 minuto
+% Elimina Estados com menos de 1 minuto
 
 nEpocas = 12; % 12 epocas equivalem a 1 minuto
 
-i=1;
+i=2;
 n = 1;
 while i >= 1 && i < length(Estados)
     if Estados(i) == Estados(i+1)
         n = n + 1;
-        i = i + 1;
     else
         if n < nEpocas
-            Estados(i-n:i) = max([Estados(i-n-1) Estados(i+1)]);
+            Estados(i-n:i) = max([Estados(i-n+1) Estados(i+1)]);
         end
         n = 1;
-        i = i + 1;
-    end
+	end
+	i = i + 1;
 end
-%% Classifica subestados de WAKE (ativo/repouso)
+% Classifica subestados de WAKE (ativo/repouso)
 
 
 w = find(Estados == 3);
 
 for i = w
-    if(Emg_s(i) > MIO_thresh1(1)  )
+    if(Emg_s(i) > MIO_thresh2(1)  )
         Estados(i) = 4;
     end
+end
+% Elimina Estados com menos de 1 minuto
+
+nEpocas = 12; % 12 epocas equivalem a 1 minuto
+
+i=2;
+n = 1;
+while i >= 1 && i < length(Estados)
+	disp(i);
+    if Estados(i) == Estados(i+1)
+        n = n + 1;
+    else
+        if n <= nEpocas
+            Estados(i-n:i) = max([Estados(i-n) Estados(i+1)]);
+        end
+        n = 1;
+	end
+	i = i + 1;
 end
 
 %% Converte de volta para o vetor com os estados em 
@@ -220,6 +243,7 @@ REM_SLEEP(r) = 1;
 SW_SLEEP(s) = 1;
 WAKE(w) = 1;
 WAKE_A(wa) = 1;
+
 
 
 %Plota a figura bonitona com os estados ja corrigidos em Area e patamares
@@ -321,12 +345,13 @@ total_time = length(REM_SLEEP);
 REM_time = sum(REM_SLEEP);
 SWS_time = sum(SW_SLEEP);
 WAKE_time = sum(WAKE);
+WAKEA_time = sum(WAKE_A);
 
-save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/percentuals/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time');
+save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/percentuals/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time','WAKEA_time');
 
 
-d = sprintf('State percentual:\n\n\t REM: %.1f\n\t SWS: %.1f\n\tWAKE: %.1f',REM_time*100/total_time,SWS_time*100/total_time,WAKE_time*100/total_time);
+d = sprintf('State percentual:\n\n\t REM: %.1f\n\t SWS: %.1f\n\tWAKE_R: %.1f\n\tWAKE_A: %.1f',REM_time*100/total_time,SWS_time*100/total_time,WAKE_time*100/total_time,WAKEA_time*100/total_time);
 disp(d);
 
-clear d total_time REM_time SWS_time WAKE_time
+clear d total_time REM_time SWS_time WAKE_time WAKEA_time
 

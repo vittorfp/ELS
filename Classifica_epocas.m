@@ -11,13 +11,13 @@
 
 % Carrega os dados decimados
 cd('/home/vittorfp/Documentos/Neuro/Scripts/ELS');
-rato = '42_1';
-load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R42MIO1_1khz.mat');
+rato = '41_1';
+load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R41MIO1_1khz.mat');
 %y = hilbert(MIO_1khz);
 %MIO_1khz = abs(y);
 clear y;
-load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R42HIPO1_1khz.mat');
-load('/home/vittorfp/Documentos/Neuro/Dados/light/R42_1_spectrogram.mat');
+load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R41HIPO1_1khz.mat');
+load('/home/vittorfp/Documentos/Neuro/Dados/light/R41_1_spectrogram.mat');
 
 %% Inicializa Parâmetros
 
@@ -56,7 +56,7 @@ for i = init:epocas
     figure(1);
     subplot(4,2,[1 2]);
     plot(t(range),HIPO_1khz(range));
-    ylim([-0.7 0.7]);
+    ylim([-0.7 4]);
     grid();
     title('LFP Hipocampus');
     xlabel('Tempo(s)');
