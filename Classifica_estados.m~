@@ -1,20 +1,11 @@
 %% Loada os dados
 rat_num = 42;
-slice_num = 1; 
+slice_num = 4; 
 rato = sprintf('%d_%d',rat_num,slice_num);
 file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/light/R%s_spectrogram.mat',rato);
 load(file);
 
-% Standarisation
-%Emg_s = ( Emg_s - mean(Emg_s)) / std(Emg_s);
-%Delta_s = ( Delta_s - mean(Delta_s)) / std(Delta_s);
-%Theta_s = ( Theta_s - mean(Theta_s)) / std(Theta_s);
-
-% Rescaling
-Emg_s = ( Emg_s - min(Emg_s)) / (max(Emg_s) - min(Emg_s));
-Delta_s = ( Delta_s - min(Delta_s)) / (max(Delta_s) - min(Delta_s));
-Theta_s = ( Theta_s - min(Theta_s)) / (max(Theta_s) - min(Theta_s));
-Theta_s = ( Theta_s - min(Theta_s)) / (max(Theta_s) - min(Theta_s));
+EmgP
 
 	% Classifica todos os estados
 
@@ -262,7 +253,7 @@ WAKE_A(wa) = 1;
 range = 1:length(Delta_s); 
 figure(2)
 subplot(4,1,1)
-plot(Delta_s(range));hold all;plot(Theta_s(range) );plot(Emg_s(range) );
+plot(Delta_s(range));hold all;plot(Theta_s(range) );plot(10*Emg_s(range) );
 %plot(REM_threshD(range) );plot(REM_threshT(range) );plot(MIO_thresh(range) );
 hold off;
 figure(gcf);
@@ -270,7 +261,6 @@ legend('Delta','Theta','EMG');%,'REM Delta Treshold','REM Theta Treshold','MIO T
 title('Arquitetura do sono');
 %xlabel('Epocas de 10s');
 ylabel('Potencia');
-ylim([-1 2]);
 xlim([min(range) max(range)]);
 grid();
 

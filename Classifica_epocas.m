@@ -11,7 +11,7 @@
 
 % Carrega os dados decimados
 cd('/home/vittorfp/Documentos/Neuro/Scripts/ELS');
-rato = '41_1';
+rato = '44_1';
 load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R41MIO1_1khz.mat');
 %y = hilbert(MIO_1khz);
 %MIO_1khz = abs(y);
@@ -38,7 +38,7 @@ load('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/man_clas.mat');
 init = epoca;
 
 %% Plota por época
-
+init = 3895;
 
 for i = init:epocas
     epoca = i;
@@ -56,9 +56,10 @@ for i = init:epocas
     figure(1);
     subplot(4,2,[1 2]);
     plot(t(range),HIPO_1khz(range));
-    ylim([-0.7 4]);
+    ylim([-0.7 0.7]);
     grid();
-    title('LFP Hipocampus');
+	t = sprintf('LFP Hipocampus %s',rato);
+    title(t);
     xlabel('Tempo(s)');
 
 
