@@ -76,7 +76,7 @@ for rat_num = [41:44 47:50 52 54:60 ]
 
         %load( sprintf('%sR%d_%d_spectrogram.mat',folder3, rat_num,slice_num ), 'F','F2','P','P2','A');
         
-		disp('Somando as bandas');
+		disp('Salvando em:');
 		
 		
         banda_theta = find(F >5 & F < 12 );
