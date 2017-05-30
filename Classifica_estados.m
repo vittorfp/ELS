@@ -1,5 +1,5 @@
 %% Loada os dados
-rat_num = 42;
+rat_num = 41;
 slice_num = 1; 
 rato = sprintf('%d_%d',rat_num,slice_num);
 file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/light/R%s_spectrogram.mat',rato);
@@ -54,7 +54,7 @@ WAKE(is_wake) = 1;
 
 %% Plota o grafico com os estados
 range = 1:length(Delta_s); 
-figure(1)
+figure(14)
 subplot(4,1,1)
 plot(Delta_s(range));hold all;plot(Theta_s(range) );plot(Emg_s(range) );
 %plot(REM_threshD(range) );plot(REM_threshT(range) );plot(MIO_thresh(range) );
@@ -220,10 +220,10 @@ for i = w
         Estados(i) = 4;
     end
 end
+
+
 % Elimina Estados com menos de 1 minuto
-
 nEpocas = 12; % 12 epocas equivalem a 1 minuto
-
 i=2;
 n = 1;
 while i >= 1 && i < length(Estados)
@@ -238,6 +238,8 @@ while i >= 1 && i < length(Estados)
 	end
 	i = i + 1;
 end
+
+
 
 % Converte de volta para o vetor com os estados em 
 r = find(Estados == 1);

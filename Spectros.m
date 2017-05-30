@@ -3,7 +3,7 @@
 
 folder = '/home/vittorfp/data/';
 folder2 = sprintf('%skhz/',folder);
-folder3 = sprintf('%sspectrograms/light/',folder2);
+folder3 = sprintf('%slight/',folder);
 
 tamanho_epoca = 5;%(segundos)
 for rat_num = [41:44 47:50 52 54:60 ] 
