@@ -11,13 +11,13 @@
 
 % Carrega os dados decimados
 cd('/home/vittorfp/Documentos/Neuro/Scripts/ELS');
-rato = '42_1';
-load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R42MIO1_1khz.mat');
+rato = '52_1';
+load('/home/vittorfp/Documentos/Neuro/Dados/khz/R41MIO1_1khz.mat');
 %y = hilbert(MIO_1khz);
 %MIO_1khz = abs(y);
 clear y;
-load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R42HIPO1_1khz.mat');
-load('/home/vittorfp/Documentos/Neuro/Dados/light/R42_1_spectrogram.mat');
+load('/home/vittorfp/Documentos/Neuro/Dados/khz/R41HIPO1_1khz.mat');
+load('/home/vittorfp/Documentos/Neuro/Dados/light/R52_1_spectrogram.mat');
 
 %% Inicializa Parâmetros
 
@@ -38,7 +38,7 @@ load('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/man_clas.mat');
 init = epoca;
 
 %% Plota por época
-
+init = 1;
 
 for i = init:epocas
     epoca = i;
@@ -58,7 +58,8 @@ for i = init:epocas
     plot(t(range),HIPO_1khz(range));
     ylim([-0.7 0.7]);
     grid();
-    title('LFP Hipocampus');
+	t = sprintf('LFP Hipocampus %s',rato);
+    title(t);
     xlabel('Tempo(s)');
 
 
@@ -260,4 +261,7 @@ while i >= 1 && i < length(Estados)
         i = i + 1;
     end
 end
-%% Salva os d
+%% Salva os dados pósprocessados
+file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/labels-%s.mat',rato);
+save(file,'Estados','rato');
+

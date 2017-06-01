@@ -11,13 +11,13 @@
 
 % Carrega os dados decimados
 cd('/home/vittorfp/Documentos/Neuro/Scripts/ELS');
-rato = '44_1';
-load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R41MIO1_1khz.mat');
+rato = '52_1';
+load('/home/vittorfp/Documentos/Neuro/Dados/khz/R52MIO1_1khz.mat');
 %y = hilbert(MIO_1khz);
 %MIO_1khz = abs(y);
 clear y;
-load('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/R41HIPO1_1khz.mat');
-load('/home/vittorfp/Documentos/Neuro/Dados/light/R41_1_spectrogram.mat');
+load('/home/vittorfp/Documentos/Neuro/Dados/khz/R52HIPO1_1khz.mat');
+load('/home/vittorfp/Documentos/Neuro/Dados/light/R52_1_spectrogram.mat');
 
 %% Inicializa Parâmetros
 
@@ -38,7 +38,7 @@ load('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/man_clas.mat');
 init = epoca;
 
 %% Plota por época
-init = 3895;
+init = 1;
 
 for i = init:epocas
     epoca = i;

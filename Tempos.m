@@ -10,7 +10,7 @@ total = 0;
 
 for slice_num = [1:4]
 	rato = sprintf('%d_%d',rat_num,slice_num);
-	file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/percentuals/R%s_times.mat',rato);
+	file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/percentuals/R%s_times.mat',rato);
 	
 	load(file);
 	REM = REM + REM_time;
