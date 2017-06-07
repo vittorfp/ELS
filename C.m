@@ -1,6 +1,7 @@
 %%
 for rat_num =  [41:44 47:50 52 54:60]
 
+
 	for slice_num = 1:4 
 		
 		%% Loada os dados

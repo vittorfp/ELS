@@ -20,8 +20,8 @@ for rat_num = [41:44 47:50 52 54:60 ]
         load(file, 'HIPO_1khz');
 		n_epocas = floor(length(HIPO_1khz)/(tamanho_epoca*srate) ) - 1;
 		
-        utreshold =  1.5; %Definido empiricamente
-        ltreshold =  -1.5; %Definido empiricamente
+        utreshold =  mean(HIPO_1khz) + (4*std(HIPO_1khz)); %Definido empiricamente
+        ltreshold =  -utreshold; %Definido empiricamente
         
 		A = find(HIPO_1khz > utreshold | HIPO_1khz < ltreshold);
 		eA = ceil( A/(tamanho_epoca*srate) );
@@ -51,8 +51,8 @@ for rat_num = [41:44 47:50 52 54:60 ]
 
         [S2,F2,T2,P2] = spectrogram(MIO_1khz,WINDOW*srate,NOVERLAP*srate,[],srate); 
 		
-        utreshold =  1.5; %Definido empiricamente
-        ltreshold =  -1.5; %Definido empiricamente
+        utreshold =  mean(MIO_1khz) + (3*std(MIO_1khz)); %Definido empiricamente
+        ltreshold =  -utreshold; %Definido empiricamente
         A = find(MIO_1khz > utreshold | MIO_1khz < ltreshold);
         
 		%A2 = floor( A ./ ( length(MIO_1khz)/length(T2) ) );
