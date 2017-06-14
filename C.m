@@ -1,10 +1,8 @@
 %%
 for rat_num =  [41:44 47:50 52 54:60]
-
-
 	for slice_num = 1:4 
 		
-		%% Loada os dados
+		% Loada os dados
 		rato = sprintf('%d_%d',rat_num,slice_num);
 		file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/scaled/R%s_scaled.mat',rato);
 		load(file);
@@ -58,7 +56,7 @@ for rat_num =  [41:44 47:50 52 54:60]
 		%
 		superposicao = find(REM_SLEEP + SW_SLEEP + WAKE_R + WAKE_A > 1);
 		if(length(superposicao) == 0)
-			disp('Nao houveram superposições entre os estados');
+			%disp('Nao houveram superposições entre os estados');
 		else
 			for i = superposicao
 				if REM_SLEEP(i) == 1 
@@ -121,7 +119,7 @@ for rat_num =  [41:44 47:50 52 54:60]
 		WAKE_R(wr) = 1;
 		WAKE_A(wa) = 1;
 		
-		%% Vê qual o percentual de tempo o Ratovsky fica em cada estado
+		% Vê qual o percentual de tempo o Ratovsky fica em cada estado
 
 		total_time = length(REM_SLEEP);
 		REM_time = sum(REM_SLEEP);
@@ -129,10 +127,12 @@ for rat_num =  [41:44 47:50 52 54:60]
 		WAKE_time = sum(WAKE_R);
 		WAKEA_time = sum(WAKE_A);
 
-		save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/percentuals/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time','WAKEA_time');
+		save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/percentuals/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time','WAKEA_time','Estados');
 
 	end 
 end
+
+clear Active Classes Estados Delta_scaled Theta_scaled Gamma_scaled Emg_scaled Delta_s Theta_s Gamma_s folder folder2 file p_total Gamma Theta Delta rat_num slice_num Thteta Emg Emg_s
 %% Plota a figura bonitona com os estados ja corrigidos em Area e patamares
 range = 1:length(Delta_scaled); 
 figure(2)

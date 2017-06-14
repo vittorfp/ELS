@@ -46,3 +46,4 @@ for rat_num = [41:44 47:50 52 54:60]
 		
 	end
 end
+clear Estados Delta_scaled Theta_scaled Gamma_scaled Emg_scaled Delta_s Theta_s Gamma_s folder folder2 file p_total Gamma Theta Delta rat_num slice_num Thteta Emg Emg_s
