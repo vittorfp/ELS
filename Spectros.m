@@ -20,8 +20,8 @@ for rat_num = [41:44 47:50 52 54:60 ]
         load(file, 'HIPO_1khz');
 		n_epocas = floor(length(HIPO_1khz)/(tamanho_epoca*srate) ) - 1;
 		
-        utreshold =  mean(HIPO_1khz) + (4*std(HIPO_1khz)); %Definido empiricamente
-        ltreshold =  -utreshold; %Definido empiricamente
+        utreshold =  mean(HIPO_1khz) + (4*std(HIPO_1khz)); 
+        ltreshold =  -utreshold;
         
 		A = find(HIPO_1khz > utreshold | HIPO_1khz < ltreshold);
 		eA = ceil( A/(tamanho_epoca*srate) );
