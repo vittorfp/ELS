@@ -13,7 +13,7 @@ for rat_num = todos
 		load(file,'Estados','total_time');
 
 		hora = floor(total_time / 6);
-
+		
 		for i = 0:5
 			h = Estados( (i*hora) + 1 : (i+1)*hora );
 
@@ -48,7 +48,7 @@ for rat_num = todos
 end
 
 mean = totalizador/rats;
-
+%%
 figure(2);
 b = bar(mean,1,'stacked');
 xlim([0.5 24.5]);
@@ -56,6 +56,8 @@ ylim([0 1]);
 title('Time in each state (mean)');
 ylabel('% of time');
 xlabel('Hour of day (24h)');
+legend('REM','SWS','WAKE_R','WAKE_A')
+legend boxoff
 ax = gca;
 ax.XTick = [1:6:24];
 ax.XTickLabelMode = 'manual';

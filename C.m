@@ -134,7 +134,19 @@ end
 
 clear Active Classes Estados Delta_scaled Theta_scaled Gamma_scaled Emg_scaled Delta_s Theta_s Gamma_s folder folder2 file p_total Gamma Theta Delta rat_num slice_num Thteta Emg Emg_s
 %% Plota a figura bonitona com os estados ja corrigidos em Area e patamares
+r = find(Estados == 1);
+s = find(Estados == 2);
+wr = find(Estados == 3);
+wa = find(Estados == 4);
+
+REM_SLEEP = zeros(1,length(Delta_scaled));
+SW_SLEEP = zeros(1,length(Delta_scaled));
+WAKE_R = zeros(1,length(Delta_scaled));
+WAKE_A = zeros(1,length(Delta_scaled));
+%%
+
 range = 1:length(Delta_scaled); 
+%range = 1:1000;
 figure(2)
 subplot(4,1,1)
 plot(Delta_scaled(range));hold all;plot(Theta_scaled(range) );plot(Emg_scaled(range) );
@@ -158,7 +170,7 @@ h.FaceColor = [85/255 20/255 201/255];
 hold on;
 
 
-h = area(SW_SLEEP(range));
+h = area(SW_SLEEP(range));	
 h.FaceColor = [85/255 151/255 221/255];
 h.LineWidth = 0.01;
 h.EdgeAlpha = 0.5;

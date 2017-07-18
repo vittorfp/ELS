@@ -4,13 +4,12 @@
 
 % Carrega os dados decimados
 cd('/home/vittorfp/Documentos/Neuro/Scripts/ELS');
-rato = '52_1';
+%rato = '52_1';
 %load('/home/vittorfp/Documentos/Neuro/Dados/khz/R42MIO1_1khz.mat');
 %y = hilbert(MIO_1khz);
 %MIO_1khz = abs(y);
 %clear y;
 load('/home/vittorfp/Documentos/Neuro/Dados/khz/R42HIPO1_1khz.mat');
-%load('/home/vittorfp/Documentos/Neuro/Dados/light/R42_1_spectrogram.mat');
 %% Inicializa Parâmetros
 
 % Parâmetros do dado
@@ -23,6 +22,7 @@ NOVERLAP=5;
 
 %% Plota gráfico do traçado
 
+t = 0:1/Frequencia_amostral:length(HIPO_1khz)/Frequencia_amostral;
 n = 1;
 epoca = 1500;
 range = 1 + (epoca - n) * Tamanho_epoca*Frequencia_amostral:epoca*Tamanho_epoca*Frequencia_amostral;
@@ -34,6 +34,7 @@ grid();
 ta = sprintf('Potencial de campo local (Taxa de amostragem = 1kHz)');
 title(ta);
 ax = gca;
+ax.YTick = [-0.7 0 0.7];
 ax.XTickLabel = {'0','0.5','1','1.5','2','2.5','3','3.5','4','4.5','5'};
 
 ylabel('Potencial(\muV)');
@@ -104,48 +105,172 @@ box off
 set(gcf,'color','white');
 
 %% Espectrograma
+
+load('/home/vittorfp/Documentos/Neuro/Dados/khz/R42HIPO1_1khz.mat');
+% Parâmetros do dado
+Frequencia_amostral = 1000; % Hz
+Tamanho_epoca = 5; % Segundos
+
+srate=1000;
+WINDOW=10;  
+NOVERLAP=5;
+
 n = 60;
 epoca = 1500;
 range = 1 + (epoca - n) * Tamanho_epoca*Frequencia_amostral:epoca*Tamanho_epoca*Frequencia_amostral;
 
 spectrogram(HIPO_1khz(range),WINDOW*srate,NOVERLAP*srate,[],srate,'yaxis');
 title('Análise espectral')
-legend boxoff
-box off
+
 set(gcf,'color','white');
 %% Soma das bandas
 
-[S2,F2,T2,P2] = spectrogram(HIPO_1khz,WINDOW*srate,NOVERLAP*srate,[],srate); 
+load('/home/vittorfp/Documentos/Neuro/Dados/light/R42_1_spectrogram.mat');
+folder2 = '/home/vittorfp/Documentos/Neuro/Dados/scaled/';
+file = sprintf('%sR42_1_scaled.mat',folder2);		
+load(file);
 
-utreshold =  mean(MIO_1khz) + (3*std(MIO_1khz)); %Definido empiricamente
-ltreshold =  -utreshold; %Definido empiricamente
-A = find(MIO_1khz > utreshold | MIO_1khz < ltreshold);
 
-eA2 = ceil( A/(tamanho_epoca*srate) );
-eA2 = unique(eA2);
+range = 1:1600;
+figure(1)
+subplot(3,1,1)
+plot(Delta(range));
+hold on
+plot(Theta(range));
+plot(Emg(range));
+plot(Gamma(range));
+hold off
+grid()
+%xlabel('Número da época');
+ylabel('Potência');
+title('Soma das potências nas bandas de frequencia');
+legend('Delta','Theta','Emg','Gamma');
+xlim([min(range) max(range)]);
+legend boxoff
+box off
 
-clear MIO_1khz A1 A2
-clear S2 T2 A utreshold ltreshold Aq A2
+subplot(3,1,2)
+plot(Delta_s(range));
+hold on
+plot(Theta_s(range));
+plot(Emg_s(range));
+plot(Gamma_s(range));
+hold off
+grid()
+%xlabel('Número da época');
+ylabel('Potência média');
+%title('Potências suavizadas');
+legend('Delta','Theta','Emg','Gamma');
+xlim([min(range) max(range)]);
+legend boxoff
+box off
+set(gcf,'color','white');
 
-banda_theta = find(F >5 & F < 12 );
-banda_delta = find(F >1 & F < 4);
-banda_gamma = find(F >33 & F < 55);
-banda_emg = find(F2 > 300 & F2 < 500);
 
-Emg   = sum( P2(banda_emg , : ) );
-Theta = sum( P(banda_theta, : ) );
-Delta = sum( P(banda_delta, : ) );
-Gamma = sum( P(banda_gamma, : ) );
+subplot(3,1,3)
+plot(Delta_scaled(range));
+hold on
+plot(Theta_scaled(range));
+plot(Emg_scaled(range));
+plot(Gamma_scaled(range));
+hold off
+grid()
+xlabel('Número da época');
+ylabel('Potência normalizada');
+%title('Potências reescaladas');
+legend('Delta','Theta','Emg','Gamma');
+xlim([min(range) max(range)]);
+legend boxoff
+box off
+set(gcf,'color','white');
 
-clear P P2 F F2
 
-Emg(eA) = 0;
-Theta(eA) = 0;
-Delta(eA) = 0;
-Gamma(eA) = 0;
-		
-%% Media na janela
 
 %% Classificação
 
+file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/percentuals/R42_1_times.mat');
+load(file);
+folder2 = '/home/vittorfp/Documentos/Neuro/Dados/scaled/';
+file = sprintf('%sR42_1_scaled.mat',folder2);		
+load(file);
+
+r = find(Estados == 1);
+s = find(Estados == 2);
+wr = find(Estados == 3);
+wa = find(Estados == 4);
+		
+REM_SLEEP = zeros(1,length(Delta_scaled));
+SW_SLEEP = zeros(1,length(Delta_scaled));
+WAKE_R = zeros(1,length(Delta_scaled));
+WAKE_A = zeros(1,length(Delta_scaled));
+
+REM_SLEEP(r) = 1;
+SW_SLEEP(s) = 1;
+WAKE_R(wr) = 1;
+WAKE_A(wa) = 1;
+
+
+range = 1:1600;
+
+figure(1)
+subplot(3,1,1)
+h = area(100*REM_SLEEP(range));
+%h.LineWidth = 0.001;
+%h.EdgeColor = 'none';
+h.FaceColor = [85/255 20/255 201/255];
+hold on;
+
+
+h = area(100*SW_SLEEP(range));
+h.FaceColor = [85/255 151/255 221/255];
+%h.LineWidth = 0.01;
+%h.EdgeAlpha = 0.5;
+
+h = area(100*WAKE_A(range));
+h.FaceColor = [200/255 240/255 200/255];
+%h.EdgeColor = 'none';
+%h.LineWidth = 0.0001;
+%h.EdgeAlpha = 0.5;
+
+h = area(100*WAKE_R(range));
+h.FaceColor = [85/255 220/255 200/255];
+%h.EdgeColor = 'none';
+%h.LineWidth = 0.0001;
+%h.EdgeAlpha = 0.5;
+
+hold off;
+%plot(Emg_s);hold all; plot(MIO_thresh);hold off
+xlim([min(range) max(range)]);
+set(gca,'YTick',[]);
+title('Classificação dos estágios de sono');
+%xlabel('Epocas de 10s');
+%ylabel('Estado');
+legend('REM','SWS','WAKE_A','WAKE_R');
+%legend boxoff;
+box off;
+ylim([0 1]);
+grid();
+
+
+subplot(3,1,[2 3]);
+
+stairs(Estados(range),'LineWidth',2);
+ylim([0.5 4.5]);
+xlim([min(range) max(range)]);
+%yticks([1 2 3]);
+%yticklabels({'REM','SWS','WAKE'});
+set(gca,'YTick',[1:4]);
+set(gca,'YTickLabel',{'REM' 'SWS' 'WAKE R' 'WAKE A'});
+%title('Arquitetura do sono');
+xlabel('Epocas de 5s');
+ylabel('Estado');
+grid();
+
+set(gcf,'color','white');
+
+		
 %% Distibuição temporal
+% esse vai ser o gráfico gerado pelo negocio mesmo
+
+
+
