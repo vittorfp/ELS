@@ -135,12 +135,17 @@ end
 clear Active Classes Estados Delta_scaled Theta_scaled Gamma_scaled Emg_scaled Delta_s Theta_s Gamma_s folder folder2 file p_total Gamma Theta Delta rat_num slice_num Thteta Emg Emg_s
 %% Plota a figura bonitona com os estados ja corrigidos em Area e patamares
 
+rat_num = 49;
+slice_num = 1;
 
-file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/percentuals/R42_1_times.mat');
+rato = sprintf('%d_%d',rat_num,slice_num);
+
+file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/percentuals/R%s_times.mat',rato);
 load(file);
 folder2 = '/home/vittorfp/Documentos/Neuro/Dados/scaled/';
-file = sprintf('%sR42_1_scaled.mat',folder2);		
+file = sprintf('%sR%s_scaled.mat',folder2,rato);		
 load(file);
+%%
 
 r = find(Estados == 1);
 s = find(Estados == 2);
@@ -158,7 +163,7 @@ WAKE_R(wr) = 1;
 WAKE_A(wa) = 1;
 
 
-%%
+%
 
 
 range = 1:length(Delta_scaled); 
