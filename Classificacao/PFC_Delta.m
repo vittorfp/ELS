@@ -45,7 +45,7 @@ MIO = movmean(Miograma,window_size);
 
 % Theta/Delta
 TD = TH ./ DP;
-
+clear TH DP 
 %% Thresholds Convencionais
 
 % Obtem o threshold o para o MIO
@@ -89,36 +89,128 @@ REM(r) = 1;
 s = find( REM == 0 & WAKE == 0 );
 SWS = zeros(1,length(TD));
 SWS(s) = 1;
-%% Tresholds Aprendidos
+%% Tresholds Aprendidos MIO
 
-problem_MIO = struct('points',MIO','num_classes',2,'num_queries',10);
+problem_MIO = struct('points',MIO' ,'num_queries',10,'rat_num',rat_num,'slice_num',slice_num);
 
-selector = @unlabeled_selector;
-label_oracle = @Oracle;
-% Fazer essa função oracle, que plota um gráfico e pede ao usuario pra
-% classificar uma epoca.
+x = [ find(  min(problem_MIO.points)  == problem_MIO.points ) ; find(  max(problem_MIO.points)  == problem_MIO.points ) ] ;
+y = [0; 1];																																											
+%
 
-model = @gaussian_process_model;
-% depois trocar o model para um STUMP, que usei no tp de ML
-% Criar um handler para uma função que receba os mesmos parâmetros das
-% outras funções model, treine um stump com os dados já classificados que
-% se encontram disponiveis.
+c = 1;
+strs = {'Dormindo','Acordado'};
+for i = 1:problem_MIO.num_queries
 
+	model = fitcsvm(problem_MIO.points(x) , y ,'KernelFunction','rbf','BoxConstraint',Inf,'ClassNames',[0,1]);
+	[label,score] = predict(model,problem_MIO.points); 
 
-query_strategy = @argmin;
-% Pega o ponto que tem a menor diferença do valor do stump
+	 	
+ 	a = ones(size(label));
+ 	a(x) = 0;
+ 	a = logical(a);
+	
+	x_star = find(   score( :, c) == min( score( a ,c))   );
+	
+	x_star = x_star + randi([1 length(problem_MIO.points)-x_star ],1);
+	
+	% observe point(s)
+	
+	
+	y_star = Oracle(problem_MIO, x_star,MIO,x,y ,strs);
+	
 
-% Rodar uma rotina para classificar o maior de todos os TDs como REM e o
-% menor de todos como NOT-WAKE e o maior de todos como WAKE, Para que o
-% stump tenha algo para começar.
+	% add observation(s) to training set
+	x = [x; x_star];
+	y = [y; y_star];
+	
 
-[chosen_ind, chosen_labels] = active_learning(problem, [], [], label_oracle, selector, query_strategy, model);
-% Mudar o codigo do cara para que seja possivel utilizar as 
+	if c == 1 
+		c = 2;
+	elseif c == 2
+		c = 1;
+	end
+	
+end
 
+model = fitcsvm(problem_MIO.points(x), y,'KernelFunction','rbf','BoxConstraint',Inf,'ClassNames',[0,1]);
+[WAKE,score] = predict(model,problem_MIO.points);
 
+figure(2)
+subplot(2,1,1)
+area(WAKE)
+subplot(2,1,2)
+plot(MIO)
+hold on;
+color = y;
+color(color == 0) = 2;
+scatter(x,MIO(x),30,color,'filled');
+hold off;
+grid on;
+
+%% Tresholds Aprendidos TD
+
+problem_TD = struct('points',TD' ,'num_queries',10,'rat_num',rat_num,'slice_num',slice_num);
+
+x = [ find(  min(problem_TD.points)  == problem_TD.points ) ; find(  max(problem_TD.points)  == problem_TD.points ) ] ;
+y = [0; 1];
+%
+
+c = 1;
+strs = {'SWS','REM'};
+for i = 1:problem_MIO.num_queries
+
+	model = fitcsvm(problem_TD.points(x) , y ,'KernelFunction','rbf','BoxConstraint',Inf,'ClassNames',[0,1]);
+	[label,score] = predict(model,problem_TD.points); 
+
+	 	
+ 	a = ones(size(label));
+ 	a(x) = 0;
+	a(WAKE) = 0;
+ 	a = logical(a);
+	
+	x_star = find(   score( :, c) == min( score( a ,c))   );
+	
+	x_star = x_star + randi([1 length(problem_TD.points)-x_star ],1);
+	
+	% observe point(s)
+	
+	
+	y_star = Oracle(problem_TD, x_star,TD,x,y ,strs);
+	
+
+	% add observation(s) to training set
+	x = [x; x_star];
+	y = [y; y_star];
+	
+
+	if c == 1 
+		c = 2;
+	elseif c == 2
+		c = 1;
+	end
+	
+end
+
+model = fitcsvm(problem_TD.points(x), y,'KernelFunction','rbf','BoxConstraint',Inf,'ClassNames',[0,1]);
+[REM,score] = predict(model,problem_TD.points);
+
+figure(2)
+subplot(2,1,1)
+area(REM)
+subplot(2,1,2)
+plot(TD)
+hold on;
+color = y;
+color(color == 0) = 2;
+scatter(x,TD(x),30,color,'filled');
+hold off;
+grid on;
 
 %% Plota figura para visualização
 figure(1);
+
+REM= [];
+SWS = [];
 
 % Grafico de area com o REM
 subplot(4,2,[1 2]);
@@ -181,7 +273,7 @@ E(w) = 3;
 
 load('/home/vittorfp/Documentos/Neuro/Dados/cassificacao_manual/labels-42_1.mat');
 Estados(Estados == 4) = 3;
-sum(E == Estados(1:length(E)))*100/ length(E)
+sum(E == Estados(1:length(E)))*100 / length(E)
 
 %% Cria caixa de dialogo pra ver se vai salvar ou não threshold
 
