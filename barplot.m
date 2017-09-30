@@ -1,13 +1,17 @@
 %% Plota gráficos com os estados do rato ao longo das 24h
 %% Pega os dados
-rat_num = 42;
+
 Y = [];
-for slice_num = 1:4
-	rato = sprintf('%d_%d',rat_num,slice_num);
-	file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/ELS_data/khz/percentuals/R%s_times.mat',rato);
-	load(file);
-	Y = [Y ;WAKEA_time/total_time WAKE_time/total_time SWS_time/total_time REM_time/total_time ];
-	
+Init = [9.5  10.5   7.1   9.1   12.1 6.3   8.1   10.1  1.5   11.7  8.9  2  8.9 8.9 1.1  11  7.6  ];
+ratos = [41:44 47:50 52 54:60];
+for rat_num = ratos
+	for slice_num = 1:4
+
+		rato = sprintf('%d_%d',rat_num,slice_num);
+		file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/percentuals/R%s_times.mat',rato);
+		load(file);
+		Y = [Y ;WAKEA_time/total_time WAKE_time/total_time SWS_time/total_time REM_time/total_time ];
+	end
 end
 
 %% Plota gráfico de barras
