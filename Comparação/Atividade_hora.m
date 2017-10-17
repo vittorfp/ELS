@@ -3,7 +3,7 @@
 % GRUPO 2 = EXPERIMENTAL
 % GRUPO 3 = TUDO JUNTO
 
-grupo = 3;
+grupo = 2;
 
 totalizador = zeros(24*2,4);
 rats = 0;

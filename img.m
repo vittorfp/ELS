@@ -1,7 +1,7 @@
 %% Plota um espectrograma bonitinho coloridinho
 
-rat_num = 54;
-slice_num = 2;
+rat_num = 42;
+slice_num = 1;
 
 
 rato = sprintf('%d_%d',rat_num,slice_num);
@@ -15,7 +15,7 @@ load(file);
 file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/Welch/welch_%s.mat',rato);
 load(file);
 
-range = 500:4000;
+range = 3000:4305;
 
 
 r = find(Estados == 1);
@@ -38,14 +38,20 @@ psd = flipud(psd');
 
 figure(1)
 subplot(3, 1, 1);
-imagesc(log10(psd(960:end,	range) ));
+imagesc(log10(psd(965:end,	range) ));
 ax = gca;
-ax.YTick = 67 - [65 55 45 35 25 15 5 ];
-ax.YTickLabel = {'65','55','45','35','25','15','5'};
+ax.YTick = 61 - [ 60 50 40 30 20 10 0 ];
+%ax.YTickLabel = {'65','55','45','35','25','15','5'};
+%ax.YTick = [0:10:70];
+ax.YTickLabel = ceil(flipud(f(1:10:61)));
+%ax.YTickLabel = flipud(f(1:10:61));
 ylabel('Frequency (Hz)');
 %xlabel('Epoch');
-title('Spectrogram');
-
+title('Sleep Classification')
+hold on
+plot((Emg_scaled(range)* (-30) ) + 61, 'LineWidth',2);
+legend('Miogram')
+hold off
 
 subplot(3, 1, 3);
 
@@ -54,7 +60,7 @@ hold off;
 figure(gcf);
 legend('Delta','Theta','EMG');%,'REM Delta Treshold','REM Theta Treshold','MIO Treshold'
 %title('Classificação de sono');
-%xlabel('Epocas de 10s');
+xlabel('Epoch (5 seconds)');
 ylabel('Band power');
 xlim([ 0 max(range)-min(range)]);
 
@@ -97,7 +103,7 @@ xlim([0 max(range)-min(range) ]);
 %ylabel('Estado');
 legend('REM','SWS','WAKE_A','WAKE_R');
 ylim([0 1]);
-xlabel('Epoch');
+%xlabel('Epoch');
 ylabel('Sleep State');
 grid();
 

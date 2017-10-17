@@ -11,7 +11,7 @@ function [label] = Oracle(problem,MIO,HIPO,query_ind, x , y)
 	Frequencia_amostral = 1000; % Hz
 	Tamanho_epoca = 5; % Segundos
 	
-	% Parâmetros auxiliares
+	% Parâmetrosc auxiliares
 	t = 0: 1/Frequencia_amostral : length(HIPO)/Frequencia_amostral;
 	epocas = length(Theta_s);
 	label = [];
@@ -24,7 +24,7 @@ function [label] = Oracle(problem,MIO,HIPO,query_ind, x , y)
 		range = 1 + (epoca - 1) * Tamanho_epoca*Frequencia_amostral :  (epoca*Tamanho_epoca*Frequencia_amostral) - 1;
 	
 		figure(2);
-		%set(gcf, 'Position', get(0, 'Screensize'));
+		set(gcf, 'Position', get(0, 'Screensize'));
 		subplot(4,2,[1 2]);
 		plot(t(range)',HIPO(range));
 		ylim([-0.7 0.7]);
@@ -47,8 +47,12 @@ function [label] = Oracle(problem,MIO,HIPO,query_ind, x , y)
 		plot(problem.points)
 		hold on;
 		color = y;
-		color(color == 0) = 2;	
-		scatter(x,problem.points(x),30,color,'filled');
+		color(color == 0) = 2;
+		
+		scatter(...
+			[x; epoca],...
+			[problem.points(x); problem.points(epoca)],...
+			30,[color; 3],'filled');
 		hold off;
 		grid on;
 		set(gcf,'color','white');

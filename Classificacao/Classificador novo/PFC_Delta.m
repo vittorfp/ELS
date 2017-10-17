@@ -4,9 +4,45 @@ clear
 slice_num = 1;
 rat_num = 41;
 
-[TD, MIO] = CalculaIndicadores(rat_num,slice_num);
+rato = sprintf('%d_%d',rat_num,slice_num);
+
+% Carrega dados do HIPOCAMPO
+file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/Multitapers/mtapers_HIPO_%s.mat',rato);
+load(file);
+
+thip = find(f > 4.5 & f < 12);
+ThetaHIPO = sum(S(:,thip)');
+
+clear S f thip file
+
+% Carrega dados do CORTEX PRE-FRONTAL
+file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/Multitapers/mtapers_PFC_%s.mat',rato);
+load(file);
+
+dpfc = find(f > 0.5 & f < 4);
+DeltaPFC = sum(S(:,dpfc)');
+
+clear psd f dpfc file
+% Carrega dados do MIOGRAMA
+file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/Multitapers/mtapers_MIO_%s.mat',rato);
+load(file);
+
+mi = find(f > 100 & f < 200);
+Miograma = sum(S(:,mi)');
+
+clear S f dpfc file
+
+% Window Averaging
+window_size = 20;
+ws2 = 10;
+TH = movmean(ThetaHIPO,ws2);
+DP = movmean(DeltaPFC,ws2);
+MIO = movmean(Miograma,window_size);
 
 
+% Theta/Delta
+TD = TH ./ DP;
+clear TH DP ThetaHIPO DeltaPFC Miograma mi window_size ws2
 %% Tresholds Aprendidos
 
 % MIO
@@ -28,15 +64,9 @@ REST = (WAKE & ~ACTIVE);
 % Roda para o restante das 6 horas e ve se com o usuario se está tudo ok
 for slice = [1 2 3 4]
 	
-	[TD, MIO] = CalculaIndicadores(rat_num,slice);
+	[WAKE,score] = predict(model,);
 
-	[WAKE,~] = predict(model_wk,MIO);
-	[REM,~] = predict(model_rem,TD);
-	[ACTIVE,~] = predict(model_act,MIO);
-	SWS = (~REM & ~WAKE);
-	REST = (WAKE & ~ACTIVE);
 
-	
 	E = zeros(1,length(REM));
 	E(REM==1) = 1;
 	E(SWS==1) = 2;
@@ -62,23 +92,53 @@ for slice = [1 2 3 4]
 	WAKE_time = sum(WAKE_R);
 	WAKEA_time = sum(WAKE_A);
 
-	Plota_class(TD,MIO,REM,ACTIVE,REST,SWS)
-	
-	Estados = E;
-	
-	choice = questdlg('A Classificação ficou OK para esse periodo de 6 horas? ', ...
-		'Classificação', ...
-		'Sim','Não',...
-		'Não');
-	
-	% Handle response
-	%disp(choice)
-	if strcmp(choice, 'Sim')
-		load('/home/vittorfp/Documentos/Neuro/Dados/th.mat');
-		th = [th;rat_num slice_num th_td th_mio ];
-		save('/home/vittorfp/Documentos/Neuro/Dados/th.mat','th');
-	end
 
+	% Plota figura para visualização
+	figure(1);
+	% Grafico de area com o REM
+	subplot(4,2,[1 2]);
+	area([REM ACTIVE REST SWS]);
+	legend('REM','ACTIVE','REST','SWS')
+	grid on;
+	title('Periodos de REM');
+	ylim([0 1]);
+
+	% Traçado MIO com o threshold
+	subplot(4,2,[7 8]);
+	plot(MIO);
+	hold on;
+	%plot([0 4300],[th_mio th_mio]);
+	hold off;
+	grid on;
+	title('MIO');
+
+
+	% Traçado TD com o threshold
+	subplot(4,2,[5 6]);
+	plot(TD);
+	%hold on;
+	%plot([0 4300],[th_td th_td]);
+	%hold off;
+	grid on;
+	title('Theta/Delta');
+
+	% Traçado TD com o threshold
+	subplot(4,2,[3 4]);
+	stairs(E,'LineWidth',2);
+	% hold on
+	% stairs(E,'LineWidth',2);
+	% hold off
+	% legend('Ref','Classificado');
+	ylim([0.5 4.5])
+	%hold on;
+	%plot([0 4300],[th_td th_td]);
+	%hold off;
+	grid on;
+	title('Hipnograma');
+
+	set(gcf,'color','white');
+
+	Estados = E;
 	save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/Percentuals_new/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time','WAKEA_time','Estados');
 
 end
@@ -90,7 +150,7 @@ choice = questdlg('Salvar Classificação?', ...
 	'Sim','Não','Não');
 % Handle response
 disp(choice)
-if strcmp(choice, 'Sim')
+if choice == 'Sim'
 	load('/home/vittorfp/Documentos/Neuro/Dados/th.mat');
 	th = [th;rat_num slice_num th_td th_mio ];
 	save('/home/vittorfp/Documentos/Neuro/Dados/th.mat','th');

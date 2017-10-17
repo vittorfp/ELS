@@ -4,7 +4,7 @@
 %	epoca em que houve menor certeza de classificação. Retorna um vetor de
 %	0/1 que distingue entre as classes.
 
-function [CLASS] = ActiveLearnThreshold(problem,not)
+function [CLASS,model] = ActiveLearnThreshold(problem,not)
 	flag = 1;
 	
 	% Carrega dados do rato
@@ -73,7 +73,7 @@ function [CLASS] = ActiveLearnThreshold(problem,not)
 		choice = questdlg('A classificação foi satisfatoria?','Classificação','Sim','Não. Bora repetir','Sim');
 		if strcmp(choice, 'Sim')
 			flag = 0;
-			close(2);
+			%close(2);
 		end
 		
 	end
