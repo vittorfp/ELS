@@ -25,14 +25,14 @@ problem_TD = struct('points',MIO' ,'num_queries',7,'rat_num',rat_num,'slice_num'
 REST = (WAKE & ~ACTIVE);
 
 
-% Roda para o restante das 6 horas e ve se com o usuario se está tudo ok
+%% Roda para o restante das 6 horas e ve se com o usuario se está tudo ok
 for slice = [1 2 3 4]
 	
 	[TD, MIO] = CalculaIndicadores(rat_num,slice);
 
-	[WAKE,~] = predict(model_wk,MIO);
-	[REM,~] = predict(model_rem,TD);
-	[ACTIVE,~] = predict(model_act,MIO);
+	[WAKE,~] = predict(wk_svm,MIO');
+	[REM,~] = predict(rem_svm,TD');
+	[ACTIVE,~] = predict(act_svm,MIO');
 	SWS = (~REM & ~WAKE);
 	REST = (WAKE & ~ACTIVE);
 
@@ -62,7 +62,7 @@ for slice = [1 2 3 4]
 	WAKE_time = sum(WAKE_R);
 	WAKEA_time = sum(WAKE_A);
 
-	Plota_class(TD,MIO,REM,ACTIVE,REST,SWS)
+	Plota_class(TD,MIO,REM,ACTIVE,REST,SWS,E)
 	
 	Estados = E;
 	
@@ -72,15 +72,12 @@ for slice = [1 2 3 4]
 		'Não');
 	
 	% Handle response
-	%disp(choice)
 	if strcmp(choice, 'Sim')
-		load('/home/vittorfp/Documentos/Neuro/Dados/th.mat');
-		th = [th;rat_num slice_num th_td th_mio ];
-		save('/home/vittorfp/Documentos/Neuro/Dados/th.mat','th');
+		save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/Percentuals_new/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time','WAKEA_time','Estados');
+		save(['/home/vittorfp/Documentos/Neuro/Dados/SVMs/svms_' num2str(rat_num) '_' num2str(slice_num) '.mat' ], 'wk_svm', 'rem_svm', 'act_svm');
 	end
 
-	save(sprintf('/home/vittorfp/Documentos/Neuro/Dados/Percentuals_new/R%d_%d_times.mat', rat_num,slice_num ),'total_time','REM_time','SWS_time','WAKE_time','WAKEA_time','Estados');
-
+	
 end
 
 %% Cria caixa de dialogo pra ver se vai salvar ou não threshold

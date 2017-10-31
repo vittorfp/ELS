@@ -1,5 +1,5 @@
 
-function [] = Plota_class(TD,MIO,REM,ACTIVE,REST,SWS)
+function [] = Plota_class(TD,MIO,REM,ACTIVE,REST,SWS,E)
 
 	% Plota figura para visualização
 	figure(1);
