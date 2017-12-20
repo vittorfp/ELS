@@ -27,7 +27,7 @@ function [label] = Oracle(problem,MIO,HIPO,query_ind, x , y)
 		set(gcf, 'Position', get(0, 'Screensize'));
 		subplot(4,2,[1 2]);
 		plot(t(range)',HIPO(range));
-		ylim([-0.7 0.7]);
+		%ylim([-0.7 0.7]);
 		grid();
 		ti = sprintf('LFP Hipocampus %s',rato);
 		title(ti);
@@ -43,7 +43,7 @@ function [label] = Oracle(problem,MIO,HIPO,query_ind, x , y)
 		xlabel('Tempo(s)');
 		
 		subplot(2,1,2)
-		title('Theta/Delta')
+		
 		plot(problem.points)
 		hold on;
 		color = y;
@@ -55,6 +55,7 @@ function [label] = Oracle(problem,MIO,HIPO,query_ind, x , y)
 			30,[color; 3],'filled');
 		hold off;
 		grid on;
+		title('Potencia(Miograma ou Theta/Delta)')
 		set(gcf,'color','white');
 		% Pergunta o estado via janelinha
 		clear Estados Emg Theta Delta Gamma Theta_s Delta_s Gamma_s Emg_s

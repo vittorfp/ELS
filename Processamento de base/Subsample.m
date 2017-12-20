@@ -1,11 +1,11 @@
 %% Script que faz so subsample dos dados, diminuindo a taxa de amostragem de 2kHz para 1 kHz
 
-folder = '/home/vittorfp/Documentos/Neuro/Dados/ELS_data/'
-folder2 = sprintf('%skhz/',folder);
+folder = '/home/vittorfp/Documentos/Neuro/Dados/ELS_data/';
+folder2 = '/home/vittorfp/Documentos/Neuro/Dados/khz/';
 folder3 = sprintf('%sspectrograms/',folder2);
 
 %41:44 47:50 52 54:60
-for i = [41:44 47:50 52 54:60] 
+for i = [ 47:50 52 54:60] 
    for j = 1:4
     
        T = [];
