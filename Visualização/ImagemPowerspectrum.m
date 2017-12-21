@@ -1,7 +1,7 @@
 %% Plota um espectrograma bonitinho coloridinho
 
-rat_num = 42;
-slice_num = 1;
+rat_num = 50;
+slice_num = 3;
 
 
 rato = sprintf('%d_%d',rat_num,slice_num);
@@ -15,7 +15,7 @@ load(file);
 file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/Welch/welch_%s.mat',rato);
 load(file);
 
-range = 3000:4305;
+range = 100:4305;
 
 
 r = find(Estados == 1);

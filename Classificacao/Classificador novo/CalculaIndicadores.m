@@ -16,7 +16,7 @@ function [TD, MIO] = CalculaIndicadores(rat_num,slice_num)
 	file = sprintf('/home/vittorfp/Documentos/Neuro/Dados/Multitapers/mtapers_PFC_%s.mat',rato);
 	load(file);
 
-	%dpfc = find(f > 0.5 & f < 4);
+	%dpfc = find(f > 0.5 & f < 4)
 	DeltaPFC = sum(S(:,f > 0.5 & f < 4)');
 
 	clear psd f dpfc file

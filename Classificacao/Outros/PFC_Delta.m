@@ -1,8 +1,9 @@
 %% Algorítmo Delta-PFC  Theta-Hipo
 clear 
 %control = [41 42 43 44 52 54 55];
-control = [ 55];
-se = [47 48 49 50 56 57 58 59 60];
+control = [ ];
+%se = [47 48 49 50 56 57 58 59 60];
+se = [59 60];
 r = [control se];
 
 for rato = r
@@ -22,13 +23,13 @@ for rato = r
 		%TD
 		problem_TD = struct('points',TD' ,'num_queries',15,'rat_num',rat_num,'slice_num',slice_num,'strs','REM');
 		[REM , rem_svm] = ActiveLearnThreshold(problem_TD,WAKE);
-		SWS = (~REM & ~WAKE);
+		%SWS = (~REM & ~WAKE);
 
 
 		%TD
 		problem_TD = struct('points',MIO' ,'num_queries',7,'rat_num',rat_num,'slice_num',slice_num,'strs','ACTIVE');
 		[ACTIVE , act_svm] = ActiveLearnThreshold(problem_TD,~WAKE);
-		REST = (WAKE & ~ACTIVE);
+		%REST = (WAKE & ~ACTIVE);
 
 
 		% Roda para o restante das 6 horas e ve se com o usuario se está tudo ok
